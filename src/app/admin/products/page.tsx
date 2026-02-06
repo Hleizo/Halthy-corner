@@ -385,20 +385,7 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-neutral-800 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                          {product.images?.[0] && product.images[0] !== '/images/products/placeholder.jpg' ? (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img
-                              src={product.images[0]}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                                (e.target as HTMLImageElement).parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neutral-600"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
-                              }}
-                            />
-                          ) : (
-                            <ImageIcon className="w-5 h-5 text-neutral-600" />
-                          )}
+                          <ImageIcon className="w-5 h-5 text-neutral-600" />
                         </div>
                         <div>
                           <p className="font-medium text-white">{product.name}</p>
@@ -737,21 +724,23 @@ export default function AdminProductsPage() {
                       .filter(({ img }) => img && img !== '/images/products/placeholder.jpg')
                       .map(({ img, i }, displayIndex) => (
                         <div key={i} className="relative group rounded-lg overflow-hidden bg-neutral-800 border border-neutral-700">
-                          <div className="aspect-square relative">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={img}
-                              alt={`Product image ${displayIndex + 1}`}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = '';
-                                (e.target as HTMLImageElement).classList.add('hidden');
-                                (e.target as HTMLImageElement).parentElement!.classList.add('flex', 'items-center', 'justify-center');
-                                const icon = document.createElement('div');
-                                icon.innerHTML = '<span class="text-xs text-neutral-500">No preview</span>';
-                                (e.target as HTMLImageElement).parentElement!.appendChild(icon);
-                              }}
-                            />
+                          <div className="aspect-square relative flex items-center justify-center">
+                            {img.startsWith('http') || img.startsWith('blob:') ? (
+                              /* eslint-disable-next-line @next/next/no-img-element */
+                              <img
+                                src={img}
+                                alt={`Product image ${displayIndex + 1}`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className="flex flex-col items-center gap-1">
+                                <ImageIcon className="w-6 h-6 text-neutral-600" />
+                                <span className="text-[10px] text-neutral-500 text-center px-2 truncate max-w-full">{img.split('/').pop()}</span>
+                              </div>
+                            )}
                           </div>
                           {/* Overlay with actions */}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
