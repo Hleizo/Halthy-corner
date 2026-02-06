@@ -28,6 +28,8 @@ type OrderInsert = {
   country?: string;
   total_jod: number;
   status?: OrderStatus;
+  payment_method?: 'cliq' | 'cod';
+  location_url?: string | null;
   notes?: string | null;
   updated_at?: string;
 };
@@ -77,6 +79,8 @@ export interface Database {
           country: string;
           total_jod: number;
           status: OrderStatus;
+          payment_method: 'cliq' | 'cod';
+          location_url: string | null;
           notes: string | null;
           created_at: string;
           updated_at: string;

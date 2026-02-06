@@ -34,6 +34,9 @@ interface Order {
   city: string;
   total_jod: number;
   status: OrderStatus;
+  payment_method: 'cliq' | 'cod' | null;
+  location_url: string | null;
+  notes: string | null;
   created_at: string;
   order_items: OrderItem[];
 }
@@ -214,6 +217,7 @@ export default function AdminDashboard() {
                   <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider">Customer</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">City</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider">Total</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">Payment</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider">Status</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden lg:table-cell">Date</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
@@ -238,6 +242,15 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell text-neutral-400">{order.city}</td>
                       <td className="px-4 py-3 font-medium text-white">{formatPrice(order.total_jod)}</td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          order.payment_method === 'cliq'
+                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                            : 'bg-green-500/10 text-green-400 border border-green-500/20'
+                        }`}>
+                          {order.payment_method === 'cliq' ? 'CliQ' : 'COD'}
+                        </span>
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${statusConf.color}`}>
                           <StatusIcon className="w-3 h-3" />
@@ -314,6 +327,31 @@ export default function AdminDashboard() {
                 <h4 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Delivery Address</h4>
                 <p className="text-white">{selectedOrder.address}</p>
                 <p className="text-sm text-neutral-400">{selectedOrder.city}, Jordan</p>
+                {selectedOrder.location_url && (
+                  <a
+                    href={selectedOrder.location_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-blue-400 hover:text-blue-300 underline"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    Open in Google Maps
+                  </a>
+                )}
+              </div>
+              {/* Payment */}
+              <div>
+                <h4 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Payment Method</h4>
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium ${
+                  selectedOrder.payment_method === 'cliq'
+                    ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                    : 'bg-green-500/10 text-green-400 border border-green-500/20'
+                }`}>
+                  {selectedOrder.payment_method === 'cliq' ? 'CliQ Transfer' : 'Cash on Delivery'}
+                </span>
+                {selectedOrder.notes && (
+                  <p className="text-sm text-neutral-400 mt-2">{selectedOrder.notes}</p>
+                )}
               </div>
               {/* Items */}
               <div>

@@ -70,6 +70,9 @@ interface CreateOrderPayload {
   city?: string;
   country?: string;
   total_jod: number;
+  payment_method?: 'cliq' | 'cod';
+  location_url?: string;
+  notes?: string;
   items: {
     product_id: string;
     product_name: string;
@@ -93,6 +96,9 @@ export async function createOrder(payload: CreateOrderPayload) {
       country: payload.country ?? 'Jordan',
       total_jod: payload.total_jod,
       status: 'pending' as OrderStatus,
+      payment_method: payload.payment_method ?? 'cod',
+      location_url: payload.location_url ?? null,
+      notes: payload.notes ?? null,
     } )
     .select()
     .single();
