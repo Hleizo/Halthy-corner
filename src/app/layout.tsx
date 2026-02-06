@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: '%s | Healthy Corner',
   },
   description:
-    'Shop FDA-cleared medical devices for home health monitoring. Blood pressure monitors, pulse oximeters, glucometers, thermometers, nebulizers, and smart health wearables.',
+    'Shop CE-certified medical devices for home health monitoring. Blood pressure monitors, pulse oximeters, thermometers, stethoscopes, and nebulizers.',
   keywords: [
     'medical devices',
     'blood pressure monitor',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     'thermometer',
     'nebulizer',
     'health monitoring',
-    'FDA cleared',
+    'CE certified',
     'home healthcare',
   ],
   authors: [{ name: 'Healthy Corner' }],
@@ -34,13 +34,13 @@ export const metadata: Metadata = {
     siteName: 'Healthy Corner',
     title: 'Healthy Corner | Your Trusted Partner in Home Health Monitoring',
     description:
-      'Shop FDA-cleared medical devices for home health monitoring. Blood pressure monitors, pulse oximeters, glucometers, and more.',
+      'Shop CE-certified medical devices for home health monitoring. Blood pressure monitors, pulse oximeters, thermometers, and more.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Healthy Corner - FDA-Cleared Medical Devices',
+        alt: 'Healthy Corner - CE-Certified Medical Devices',
       },
     ],
   },
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Healthy Corner | Your Trusted Partner in Home Health Monitoring',
     description:
-      'Shop FDA-cleared medical devices for home health monitoring.',
+      'Shop CE-certified medical devices for home health monitoring.',
     images: ['/og-image.png'],
   },
   robots: {

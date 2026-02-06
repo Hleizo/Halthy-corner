@@ -9,10 +9,12 @@ import {
   Shield,
   Check,
   Lock,
+  AlertCircle,
 } from 'lucide-react';
 import { Breadcrumbs, Button, Input, Select } from '@/components/ui';
 import { useCart } from '@/context/CartContext';
 import { formatPrice, cn } from '@/lib/utils';
+import { createOrder } from '@/lib/supabase/api';
 
 type CheckoutStep = 'shipping' | 'payment' | 'review';
 
@@ -21,6 +23,8 @@ export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('shipping');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   const [shippingInfo, setShippingInfo] = useState({
     firstName: '',
@@ -29,9 +33,8 @@ export default function CheckoutPage() {
     phone: '',
     address: '',
     city: '',
-    state: '',
-    zipCode: '',
-    country: 'US',
+    area: '',
+    country: 'Jordan',
   });
 
   const [paymentInfo, setPaymentInfo] = useState({
@@ -43,8 +46,8 @@ export default function CheckoutPage() {
 
   const [shippingMethod, setShippingMethod] = useState('standard');
 
-  const shipping = shippingMethod === 'express' ? 14.99 : subtotal >= 50 ? 0 : 7.99;
-  const tax = subtotal * 0.08;
+  const shipping = shippingMethod === 'express' ? 10 : subtotal >= 50 ? 0 : 5;
+  const tax = subtotal * 0.16; // 16% sales tax in Jordan
   const total = subtotal + shipping + tax;
 
   const steps = [
@@ -65,11 +68,40 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsProcessing(false);
-    setOrderComplete(true);
-    clearCart();
+    setOrderError(null);
+
+    try {
+      const totalJod = subtotal + shipping + tax;
+
+      const order = await createOrder({
+        customer_name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+        phone: shippingInfo.phone,
+        email: shippingInfo.email || undefined,
+        address: shippingInfo.address,
+        city: shippingInfo.city || 'Amman',
+        country: 'Jordan',
+        total_jod: totalJod,
+        items: items.map((item) => ({
+          product_id: item.product.id,
+          product_name: item.product.name,
+          quantity: item.quantity,
+          price_jod: item.product.price,
+        })),
+      });
+
+      setOrderId(order.id);
+      setOrderComplete(true);
+      clearCart();
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      setOrderError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to create order. Please try again.'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (items.length === 0 && !orderComplete) {
@@ -99,21 +131,56 @@ export default function CheckoutPage() {
               Order Confirmed!
             </h1>
             <p className="text-neutral-600 mb-2">
-              Thank you for your purchase. Your order has been received.
+              Thank you for your purchase. Your order has been received and will be processed shortly.
             </p>
             <p className="text-neutral-500 mb-8">
-              Order number: <span className="font-semibold">#HC-{Date.now().toString().slice(-8)}</span>
+              Order ID: <span className="font-semibold font-mono text-sm">{orderId?.substring(0, 8).toUpperCase()}</span>
             </p>
+            
+            <div className="bg-white rounded-2xl border border-neutral-100 p-6 mb-8">
+              <h3 className="font-semibold text-neutral-800 mb-4">What&apos;s Next?</h3>
+              <div className="space-y-3 text-left">
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800">Order Confirmation</p>
+                    <p className="text-xs text-neutral-500">
+                      We&apos;ve sent a confirmation SMS to {shippingInfo.phone}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Truck className="w-5 h-5 text-primary-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800">Delivery to {shippingInfo.city}</p>
+                    <p className="text-xs text-neutral-500">
+                      {shippingMethod === 'express' ? '1-2 business days' : '3-5 business days'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-success-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800">Total Amount</p>
+                    <p className="text-xs text-neutral-500">
+                      {formatPrice(total)} — Cash on delivery
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <p className="text-sm text-neutral-500 mb-8">
-              A confirmation email has been sent to{' '}
-              <span className="font-medium">{shippingInfo.email || 'your email'}</span>
+              Need help? Contact us at{' '}
+              <a href="tel:+962798035242" className="text-primary-500 hover:underline">+962 7 9803 5242</a>
             </p>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
                 <Link href="/shop">Continue Shopping</Link>
               </Button>
-              <Button variant="outline" size="lg">
-                Track Order
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/">Back to Home</Link>
               </Button>
             </div>
           </div>
@@ -255,7 +322,7 @@ export default function CheckoutPage() {
                         required
                       />
 
-                      <div className="grid md:grid-cols-3 gap-6">
+                      <div className="grid md:grid-cols-2 gap-6">
                         <Input
                           label="City"
                           value={shippingInfo.city}
@@ -265,19 +332,12 @@ export default function CheckoutPage() {
                           required
                         />
                         <Input
-                          label="State"
-                          value={shippingInfo.state}
+                          label="Area / District"
+                          value={shippingInfo.area}
                           onChange={(e) =>
-                            setShippingInfo({ ...shippingInfo, state: e.target.value })
+                            setShippingInfo({ ...shippingInfo, area: e.target.value })
                           }
-                          required
-                        />
-                        <Input
-                          label="ZIP Code"
-                          value={shippingInfo.zipCode}
-                          onChange={(e) =>
-                            setShippingInfo({ ...shippingInfo, zipCode: e.target.value })
-                          }
+                          placeholder="e.g., Abdoun, Sweifieh"
                           required
                         />
                       </div>
@@ -310,15 +370,15 @@ export default function CheckoutPage() {
                           />
                           <div>
                             <p className="font-medium text-neutral-800">
-                              Standard Shipping
+                              Standard Delivery
                             </p>
                             <p className="text-sm text-neutral-500">
-                              3-5 business days
+                              3-5 business days within Jordan
                             </p>
                           </div>
                         </div>
                         <span className="font-semibold text-neutral-800">
-                          {subtotal >= 50 ? 'Free' : '$7.99'}
+                          {subtotal >= 50 ? 'Free' : '5 JOD'}
                         </span>
                       </label>
 
@@ -341,14 +401,14 @@ export default function CheckoutPage() {
                           />
                           <div>
                             <p className="font-medium text-neutral-800">
-                              Express Shipping
+                              Express Delivery
                             </p>
                             <p className="text-sm text-neutral-500">
-                              1-2 business days
+                              1-2 business days within Jordan
                             </p>
                           </div>
                         </div>
-                        <span className="font-semibold text-neutral-800">$14.99</span>
+                        <span className="font-semibold text-neutral-800">10 JOD</span>
                       </label>
                     </div>
                   </div>
@@ -505,7 +565,9 @@ export default function CheckoutPage() {
                       <br />
                       {shippingInfo.address}
                       <br />
-                      {shippingInfo.city}, {shippingInfo.state} {shippingInfo.zipCode}
+                      {shippingInfo.area}, {shippingInfo.city}
+                      <br />
+                      Jordan
                       <br />
                       {shippingInfo.email}
                     </p>
@@ -529,10 +591,27 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
+                  {/* Error message */}
+                  {orderError && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h3 className="font-semibold text-red-800 mb-1">Order Failed</h3>
+                          <p className="text-sm text-red-600">{orderError}</p>
+                          <p className="text-xs text-red-500 mt-2">
+                            Please try again or contact support at +962 7 9803 5242
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex justify-between">
                     <Button
                       variant="ghost"
                       onClick={() => setCurrentStep('payment')}
+                      disabled={isProcessing}
                     >
                       <ChevronLeft className="w-4 h-4 mr-2" />
                       Back to Payment
@@ -541,8 +620,9 @@ export default function CheckoutPage() {
                       size="lg"
                       onClick={handlePlaceOrder}
                       isLoading={isProcessing}
+                      disabled={isProcessing}
                     >
-                      Place Order - {formatPrice(total)}
+                      {isProcessing ? 'Processing...' : `Place Order - ${formatPrice(total)}`}
                     </Button>
                   </div>
                 </div>
@@ -586,7 +666,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-neutral-500">Shipping</span>
+                    <span className="text-neutral-500">Delivery</span>
                     <span className="font-medium text-neutral-800">
                       {shipping === 0 ? (
                         <span className="text-success-600">Free</span>
@@ -596,7 +676,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-neutral-500">Estimated Tax</span>
+                    <span className="text-neutral-500">Tax (16%)</span>
                     <span className="font-medium text-neutral-800">
                       {formatPrice(tax)}
                     </span>

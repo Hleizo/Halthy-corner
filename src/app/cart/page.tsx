@@ -10,8 +10,8 @@ import { formatPrice } from '@/lib/utils';
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal, clearCart } = useCart();
 
-  const shipping = subtotal >= 50 ? 0 : 7.99;
-  const tax = subtotal * 0.08; // 8% tax
+  const shipping = subtotal >= 50 ? 0 : 5;
+  const tax = subtotal * 0.16; // 16% tax in Jordan
   const total = subtotal + shipping + tax;
 
   if (items.length === 0) {
@@ -204,7 +204,7 @@ export default function CartPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-neutral-500">Shipping</span>
+                    <span className="text-neutral-500">Delivery</span>
                     <span className="font-medium text-neutral-800">
                       {shipping === 0 ? (
                         <span className="text-success-600">Free</span>
@@ -215,7 +215,7 @@ export default function CartPage() {
                   </div>
                   {shipping > 0 && (
                     <p className="text-xs text-neutral-400">
-                      Add {formatPrice(50 - subtotal)} more for free shipping
+                      Add {formatPrice(50 - subtotal)} more for free delivery
                     </p>
                   )}
                   <div className="flex justify-between">

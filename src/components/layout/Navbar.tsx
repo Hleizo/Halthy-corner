@@ -9,7 +9,6 @@ import {
   ShoppingCart,
   Search,
   Heart,
-  User,
   ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -55,10 +54,14 @@ export function Navbar() {
     >
       {/* Top bar */}
       <div className="bg-primary-500 text-white text-sm py-2">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 flex items-center justify-center gap-4 flex-wrap">
           <p>
-            🎉 Free shipping on orders over $50 | 30-day satisfaction guarantee
+            🎉 Free delivery on orders over 50 JOD | 14-day satisfaction guarantee
           </p>
+          <span className="hidden sm:inline">|</span>
+          <a href="tel:+962798035242" className="hidden sm:inline hover:underline">
+            📞 +962 7 9803 5242
+          </a>
         </div>
       </div>
 
@@ -152,11 +155,6 @@ export function Navbar() {
             {/* Search */}
             <button className="hidden md:flex w-10 h-10 items-center justify-center rounded-xl text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors">
               <Search className="w-5 h-5" />
-            </button>
-
-            {/* User */}
-            <button className="hidden md:flex w-10 h-10 items-center justify-center rounded-xl text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors">
-              <User className="w-5 h-5" />
             </button>
 
             {/* Cart */}

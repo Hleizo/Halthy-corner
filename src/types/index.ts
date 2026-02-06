@@ -16,12 +16,11 @@ export interface Product {
 }
 
 export type Category = 
-  | 'blood-pressure'
-  | 'oxygen'
-  | 'diabetes-care'
-  | 'temperature'
-  | 'respiratory'
-  | 'smart-health';
+  | 'blood-pressure-monitors'
+  | 'pulse-oximeters'
+  | 'thermometers'
+  | 'stethoscopes'
+  | 'nebulizers';
 
 export interface CategoryInfo {
   id: Category;

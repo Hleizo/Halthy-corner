@@ -15,11 +15,11 @@ import { testimonials } from '@/data';
 export const metadata: Metadata = {
   title: 'About Us',
   description:
-    'Learn about Healthy Corner\'s mission to provide FDA-cleared medical devices for home health monitoring. Our story, values, and commitment to accuracy and reliability.',
+    'Learn about Healthy Corner\'s mission to provide CE-certified medical devices for home health monitoring. Our story, values, and commitment to accuracy and reliability.',
   openGraph: {
     title: 'About Healthy Corner',
     description:
-      'Learn about our mission to provide FDA-cleared medical devices for home health monitoring.',
+      'Learn about our mission to provide CE-certified medical devices for home health monitoring.',
   },
 };
 
@@ -52,8 +52,8 @@ export default function AboutPage() {
                 trip to the doctor for every reading.
               </p>
               <p className="text-neutral-600 mb-8 leading-relaxed">
-                Today, we&apos;re proud to serve over 50,000 customers nationwide,
-                providing FDA-cleared medical devices that deliver the accuracy
+                Today, we&apos;re proud to serve thousands of customers across Jordan,
+                providing CE-certified medical devices that deliver the accuracy
                 and reliability you&apos;d expect from hospital equipment—right in
                 the comfort of your home.
               </p>
@@ -70,7 +70,7 @@ export default function AboutPage() {
                 <div className="w-px h-12 bg-neutral-200" />
                 <div>
                   <p className="text-3xl font-bold text-primary-500">100%</p>
-                  <p className="text-neutral-500">FDA Cleared</p>
+                  <p className="text-neutral-500">CE Certified</p>
                 </div>
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function AboutPage() {
                 icon: Shield,
                 title: 'Trust & Reliability',
                 description:
-                  'Every product we sell is FDA-cleared and clinically validated for accuracy.',
+                  'Every product we sell is CE-certified and clinically validated for accuracy.',
               },
               {
                 icon: Users,
@@ -185,14 +185,14 @@ export default function AboutPage() {
               </h2>
               <p className="text-primary-100 text-lg mb-8">
                 Our commitment to accuracy and reliability has earned the trust
-                of doctors, nurses, and healthcare professionals nationwide.
+                of doctors, nurses, and healthcare professionals across Jordan.
               </p>
               <ul className="space-y-4">
                 {[
                   'All devices meet AAMI/ESH/ISO accuracy standards',
                   'Clinical validation studies for every product',
-                  'FDA 510(k) clearance for regulated devices',
-                  'CE marking for European compliance',
+                  'CE marking for international compliance',
+                  'JFDA registered medical devices',
                   'Dedicated medical affairs team',
                   'Free professional support and guidance',
                 ].map((item, index) => (
@@ -209,7 +209,7 @@ export default function AboutPage() {
                 { stat: '99.2%', label: 'Accuracy Rate' },
                 { stat: '4.9/5', label: 'Customer Rating' },
                 { stat: '24/7', label: 'Support Available' },
-                { stat: '100%', label: 'FDA Cleared' },
+                { stat: '100%', label: 'CE Certified' },
               ].map((item, index) => (
                 <div
                   key={index}
@@ -286,7 +286,7 @@ export default function AboutPage() {
               Ready to Take Control of Your Health?
             </h2>
             <p className="text-lg text-neutral-300 max-w-2xl mx-auto mb-8">
-              Browse our collection of FDA-cleared medical devices and start
+              Browse our collection of CE-certified medical devices and start
               your journey to better health monitoring today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

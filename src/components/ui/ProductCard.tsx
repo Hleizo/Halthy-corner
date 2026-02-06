@@ -27,8 +27,8 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
 
   const badgeConfig = {
     new: { label: 'New', className: 'bg-primary-500 text-white' },
-    bestseller: { label: 'Bestseller', className: 'bg-success-500 text-white' },
-    sale: { label: 'Sale', className: 'bg-red-500 text-white' },
+    bestseller: { label: 'Popular', className: 'bg-success-500 text-white' },
+    sale: { label: 'Best Value', className: 'bg-primary-600 text-white' },
   };
 
   return (

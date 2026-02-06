@@ -40,17 +40,17 @@ const productFaqs = [
   {
     question: 'How accurate are the readings?',
     answer:
-      'Our devices are FDA-cleared and clinically validated to meet strict accuracy standards. Most devices offer accuracy within ±3mmHg for blood pressure and ±2% for other vital measurements.',
+      'Our devices are CE-certified and clinically validated to meet strict accuracy standards. Most devices offer accuracy within ±3mmHg for blood pressure and ±2% for other vital measurements.',
   },
   {
     question: 'Can I return this product if it doesn\'t meet my needs?',
     answer:
-      'Yes! We offer a 30-day satisfaction guarantee. If you\'re not completely satisfied, you can return the product for a full refund, no questions asked.',
+      'Yes! We offer a 14-day satisfaction guarantee. If you\'re not completely satisfied, you can return the product for a full refund, no questions asked.',
   },
   {
     question: 'Is this product covered by insurance?',
     answer:
-      'Many of our medical devices may be covered by FSA/HSA accounts. We recommend checking with your insurance provider for specific coverage details.',
+      'Many of our medical devices may be covered by health insurance plans. We recommend checking with your insurance provider for specific coverage details.',
   },
 ];
 
@@ -151,9 +151,9 @@ export default function ProductDetailPage() {
 
   // Benefits bullets for conversion
   const benefitBullets = [
-    'FDA-cleared for clinical accuracy and safety',
+    'CE-certified for clinical accuracy and safety',
     'Easy-to-read display with instant results',
-    'Backed by our 30-day satisfaction guarantee',
+    'Backed by our 14-day satisfaction guarantee',
   ];
 
   return (
@@ -185,14 +185,14 @@ export default function ProductDetailPage() {
                       'absolute top-4 left-4 px-3 py-1.5 text-sm font-semibold rounded-full z-10',
                       product.badge === 'new' && 'bg-primary-500 text-white',
                       product.badge === 'bestseller' && 'bg-success-500 text-white',
-                      product.badge === 'sale' && 'bg-red-500 text-white'
+                      product.badge === 'sale' && 'bg-primary-600 text-white'
                     )}
                   >
                     {product.badge === 'new'
                       ? 'New Arrival'
                       : product.badge === 'bestseller'
-                      ? '⭐ Bestseller'
-                      : 'On Sale'}
+                      ? '⭐ Popular'
+                      : 'Best Value'}
                   </span>
                 )}
                 <div className="w-full h-full flex items-center justify-center p-12">
@@ -438,8 +438,8 @@ export default function ProductDetailPage() {
                       <Truck className="w-5 h-5 text-primary-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-neutral-800 text-sm">Free Shipping</p>
-                      <p className="text-xs text-neutral-500">On orders over $50</p>
+                      <p className="font-medium text-neutral-800 text-sm">Free Delivery</p>
+                      <p className="text-xs text-neutral-500">On orders over 50 JOD</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -447,7 +447,7 @@ export default function ProductDetailPage() {
                       <RotateCcw className="w-5 h-5 text-primary-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-neutral-800 text-sm">30-Day Returns</p>
+                      <p className="font-medium text-neutral-800 text-sm">14-Day Returns</p>
                       <p className="text-xs text-neutral-500">Hassle-free policy</p>
                     </div>
                   </div>

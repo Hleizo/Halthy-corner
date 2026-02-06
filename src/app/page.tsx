@@ -15,17 +15,20 @@ import {
   ShoppingBag,
   Star,
   Send,
+  Sparkles,
 } from 'lucide-react';
 import { Button, ProductCard, CategoryCard, Testimonials } from '@/components/ui';
-import { products, categories, testimonials } from '@/data';
+import { categories, testimonials } from '@/data';
+import { getProducts } from '@/lib/services/products';
 
 export const metadata: Metadata = {
   title: 'Home',
   description:
-    'Shop FDA-cleared medical devices for home health monitoring. Blood pressure monitors, pulse oximeters, glucometers, thermometers, nebulizers, and smart health wearables with free shipping over $50.',
+    'Shop certified medical devices for home health monitoring. Blood pressure monitors, pulse oximeters, thermometers, stethoscopes, and nebulizers with free delivery over 50 JOD in Jordan.',
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getProducts();
   const bestSellers = products.filter((p) => p.badge === 'bestseller' || p.rating >= 4.7).slice(0, 8);
 
   return (
@@ -55,7 +58,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-lg lg:text-xl text-neutral-600 mb-8 max-w-xl mx-auto lg:mx-0">
-                Experience clinical accuracy and comfort with our FDA-cleared medical devices. 
+                Experience clinical accuracy and comfort with our CE-certified medical devices. 
                 Monitor your health with precision technology you can trust—certified, reliable, 
                 and designed for everyday use.
               </p>
@@ -83,7 +86,7 @@ export default function HomePage() {
                 <div className="w-px h-10 bg-neutral-200 hidden sm:block" />
                 <div className="text-center">
                   <p className="text-2xl lg:text-3xl font-bold text-neutral-800">100%</p>
-                  <p className="text-sm text-neutral-500">FDA Cleared</p>
+                  <p className="text-sm text-neutral-500">CE Certified</p>
                 </div>
               </div>
             </div>
@@ -165,7 +168,7 @@ export default function HomePage() {
               </div>
               <div>
                 <p className="font-semibold text-neutral-800">Certified Devices</p>
-                <p className="text-sm text-neutral-500">FDA & CE approved</p>
+                <p className="text-sm text-neutral-500">CE approved</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 p-4">
@@ -183,7 +186,7 @@ export default function HomePage() {
               </div>
               <div>
                 <p className="font-semibold text-neutral-800">Fast Delivery</p>
-                <p className="text-sm text-neutral-500">Free over $50</p>
+                <p className="text-sm text-neutral-500">Free over 50 JOD</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 p-4">
@@ -276,9 +279,9 @@ export default function HomePage() {
             {[
               {
                 icon: Shield,
-                title: 'FDA Cleared Devices',
+                title: 'CE Certified Devices',
                 description:
-                  'All our devices meet strict FDA standards for safety, accuracy, and reliability in home use.',
+                  'All our devices meet strict international CE standards for safety, accuracy, and reliability in home use.',
               },
               {
                 icon: Award,
@@ -339,14 +342,14 @@ export default function HomePage() {
                   icon: Stethoscope,
                   title: 'Identify Your Needs',
                   description:
-                    'Consider what health metrics you need to monitor. Blood pressure? Glucose levels? Oxygen saturation? Understanding your requirements helps narrow down options.',
+                    'Consider what health metrics you need to monitor. Blood pressure? Oxygen saturation? Temperature? Understanding your requirements helps narrow down options.',
                 },
                 {
                   step: 2,
                   icon: ClipboardList,
                   title: 'Check Key Features',
                   description:
-                    'Look for FDA clearance, accuracy ratings, ease of use, memory storage, and connectivity options. Read reviews from verified customers.',
+                    'Look for CE certification, accuracy ratings, ease of use, memory storage, and connectivity options. Read reviews from verified customers.',
                 },
                 {
                   step: 3,
@@ -412,6 +415,33 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Coming Soon Section */}
+      <section className="py-12 bg-gradient-to-r from-primary-50 via-white to-success-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 rounded-full mb-4">
+              <Sparkles className="w-4 h-4 text-primary-600" />
+              <span className="text-sm font-medium text-primary-700">Expanding Our Range</span>
+            </div>
+            <h3 className="text-2xl lg:text-3xl font-bold text-neutral-800 mb-4">
+              More Medical Devices Coming Soon
+            </h3>
+            <p className="text-lg text-neutral-600 mb-6">
+              We are continuously expanding our range of certified medical devices to better serve your health monitoring needs. 
+              Stay tuned for new additions to our catalog, including diagnostic equipment, wellness monitors, and more.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild variant="outline">
+                <Link href="/contact">Request a Device</Link>
+              </Button>
+              <Button asChild variant="ghost">
+                <Link href="/faq">Learn More</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter Section */}
       <section className="py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -428,8 +458,8 @@ export default function HomePage() {
                 Stay Updated on Health Tips
               </h2>
               <p className="text-neutral-600 mb-8 max-w-xl mx-auto">
-                Subscribe to our newsletter for exclusive deals, health tips, and new product announcements. 
-                Join 10,000+ subscribers who prioritize their health.
+                Subscribe to our newsletter for health monitoring tips, product guides, and wellness resources. 
+                Join our community of health-conscious individuals.
               </p>
 
               <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -467,8 +497,8 @@ export default function HomePage() {
                 Ready to Take Control of Your Health?
               </h2>
               <p className="text-lg text-primary-100 max-w-2xl mx-auto mb-8">
-                Join over 50,000 customers who trust Healthy Corner for accurate,
-                reliable home health monitoring. Free shipping on orders over $50.
+                Join our customers who trust Healthy Corner for accurate,
+                reliable home health monitoring. Free delivery on orders over 50 JOD.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button

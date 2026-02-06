@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, Suspense, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { SlidersHorizontal, Grid, List, X, ChevronDown, Search, Package, Star } from 'lucide-react';
+import { SlidersHorizontal, Grid, List, X, ChevronDown, Search, Package, Star, Sparkles } from 'lucide-react';
 import { products, categories } from '@/data';
 import { Category } from '@/types';
 import { Breadcrumbs, ProductCard, Button } from '@/components/ui';
@@ -486,6 +486,27 @@ function ShopContent() {
                 ))}
               </div>
             )}
+
+            {/* Coming Soon Note */}
+            <div className="mt-12 bg-gradient-to-r from-primary-50 to-success-50 rounded-2xl border border-primary-100 p-6 lg:p-8">
+              <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-soft flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-8 h-8 text-primary-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-neutral-800 mb-2">
+                    More Medical Devices Coming Soon
+                  </h3>
+                  <p className="text-neutral-600">
+                    We are continuously expanding our range of certified medical devices. 
+                    Our team is working to bring you additional diagnostic and monitoring equipment to support your health journey.
+                  </p>
+                </div>
+                <Button asChild variant="outline" className="flex-shrink-0">
+                  <a href="/contact">Request a Device</a>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

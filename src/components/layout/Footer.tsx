@@ -28,8 +28,8 @@ export function Footer() {
                 <Truck className="w-6 h-6" aria-hidden="true" />
               </div>
               <div>
-                <p className="font-semibold text-white">Free Shipping</p>
-                <p className="text-sm text-neutral-400">On orders over $50</p>
+                <p className="font-semibold text-white">Free Delivery</p>
+                <p className="text-sm text-neutral-400">On orders over 50 JOD</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -38,7 +38,7 @@ export function Footer() {
               </div>
               <div>
                 <p className="font-semibold text-white">Easy Returns</p>
-                <p className="text-sm text-neutral-400">30-day guarantee</p>
+                <p className="text-sm text-neutral-400">14-day guarantee</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -56,7 +56,7 @@ export function Footer() {
               </div>
               <div>
                 <p className="font-semibold text-white">Flexible Payment</p>
-                <p className="text-sm text-neutral-400">Multiple options</p>
+                <p className="text-sm text-neutral-400">Cash on delivery</p>
               </div>
             </div>
           </div>
@@ -78,8 +78,8 @@ export function Footer() {
             </Link>
             <p className="text-neutral-400 mb-6 leading-relaxed">
               Your trusted partner in home health monitoring. We provide
-              FDA-cleared medical devices with exceptional accuracy and
-              reliability.
+              certified medical devices with exceptional accuracy and
+              reliability, serving customers across Jordan.
             </p>
             <div className="flex items-center gap-3" role="list" aria-label="Social media links">
               <a
@@ -192,27 +192,25 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-neutral-400">
-                  123 Health Street, Medical District
-                  <br />
-                  New York, NY 10001
+                  Amman, Jordan
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary-400 flex-shrink-0" aria-hidden="true" />
                 <a
-                  href="tel:+1-800-123-4567"
+                  href="tel:+962798035242"
                   className="text-neutral-400 hover:text-primary-400 transition-colors"
                 >
-                  1-800-123-4567
+                  +962 7 9803 5242
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary-400 flex-shrink-0" aria-hidden="true" />
                 <a
-                  href="mailto:support@healthycorner.com"
+                  href="mailto:info@healthycorner.jo"
                   className="text-neutral-400 hover:text-primary-400 transition-colors"
                 >
-                  support@healthycorner.com
+                  info@healthycorner.jo
                 </a>
               </li>
             </ul>

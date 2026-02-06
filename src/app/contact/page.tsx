@@ -71,10 +71,10 @@ export default function ContactPage() {
                       Speak with our product experts
                     </p>
                     <a
-                      href="tel:+1-800-123-4567"
+                      href="tel:+962798035242"
                       className="text-primary-500 font-medium hover:text-primary-600 transition-colors"
                     >
-                      1-800-123-4567
+                      +962 7 9803 5242
                     </a>
                   </div>
                 </div>
@@ -91,10 +91,10 @@ export default function ContactPage() {
                       We&apos;ll respond within 24 hours
                     </p>
                     <a
-                      href="mailto:support@healthycorner.com"
+                      href="mailto:info@healthycorner.jo"
                       className="text-primary-500 font-medium hover:text-primary-600 transition-colors"
                     >
-                      support@healthycorner.com
+                      info@healthycorner.jo
                     </a>
                   </div>
                 </div>
@@ -107,13 +107,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-neutral-800 mb-1">Our Location</h3>
-                    <p className="text-neutral-500 text-sm mb-2">Visit our headquarters</p>
+                    <p className="text-neutral-500 text-sm mb-2">Visit our store</p>
                     <p className="text-neutral-600">
-                      123 Health Street
-                      <br />
-                      Medical District
-                      <br />
-                      New York, NY 10001
+                      Amman, Jordan
                     </p>
                   </div>
                 </div>
@@ -130,11 +126,9 @@ export default function ContactPage() {
                       When we&apos;re available
                     </p>
                     <p className="text-neutral-600">
-                      Mon - Fri: 9AM - 8PM EST
+                      Sat - Thu: 9AM - 6PM
                       <br />
-                      Sat: 10AM - 6PM EST
-                      <br />
-                      Sun: Closed
+                      Friday: Closed
                     </p>
                   </div>
                 </div>
@@ -232,7 +226,7 @@ export default function ContactPage() {
                         type="tel"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="(555) 123-4567"
+                        placeholder="+962 7 XXXX XXXX"
                         helperText="Optional"
                       />
                       <Select
