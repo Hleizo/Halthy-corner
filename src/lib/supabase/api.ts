@@ -93,7 +93,7 @@ export async function createOrder(payload: CreateOrderPayload) {
       country: payload.country ?? 'Jordan',
       total_jod: payload.total_jod,
       status: 'pending' as OrderStatus,
-    })
+    } )
     .select()
     .single();
 

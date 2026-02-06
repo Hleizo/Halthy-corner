@@ -18,7 +18,7 @@ VALUES
   ARRAY[
     'Fully automatic arm cuff with one-touch operation',
     'Irregular heartbeat detection with visual indicator',
-    'Large backlit LCD display for easy reading',
+    'Large backlit LCD display for easy read    ing',
     'Memory storage for up to 120 readings for 2 users',
     'WHO blood pressure classification indicator'
   ],
