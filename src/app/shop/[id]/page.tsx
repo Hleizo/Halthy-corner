@@ -24,11 +24,14 @@ import {
   HelpCircle,
   Package,
   ArrowLeft,
+  RefreshCw,
 } from 'lucide-react';
-import { getProductById, products, getCategoryById } from '@/data';
+import { getProductById as getLocalProduct, products, getCategoryById } from '@/data';
+import { Product, Category } from '@/types';
 import { Breadcrumbs, Button, ProductCard } from '@/components/ui';
 import { cn, formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
+import { createClient } from '@/lib/supabase/client';
 
 // Product FAQs - common questions for products
 const productFaqs = [
@@ -56,9 +59,10 @@ const productFaqs = [
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const product = getProductById(params.id as string);
   const { addItem } = useCart();
 
+  const [product, setProduct] = useState<Product | null | undefined>(undefined);
+  const [allProducts, setAllProducts] = useState<Product[]>(products);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'description' | 'features' | 'specs' | 'faqs'>('description');
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -66,6 +70,75 @@ export default function ProductDetailPage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Fetch product from Supabase with local fallback
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const id = params.id as string;
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (!error && data) {
+          const mapped: Product = {
+            id: data.id,
+            name: data.name,
+            category: data.category as Category,
+            price: data.price,
+            originalPrice: data.original_price ?? undefined,
+            rating: data.rating,
+            reviewCount: data.review_count,
+            shortDescription: data.short_description,
+            longDescription: data.long_description,
+            features: data.features,
+            specs: data.specs,
+            stockStatus: data.stock_status,
+            images: data.images,
+            badge: data.badge ?? undefined,
+          };
+          setProduct(mapped);
+        } else {
+          // Fall back to local data
+          setProduct(getLocalProduct(id) ?? null);
+        }
+
+        // Also fetch all products for related section
+        const { data: allData } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (allData && allData.length > 0) {
+          setAllProducts(
+            allData.map((row: any) => ({
+              id: row.id,
+              name: row.name,
+              category: row.category as Category,
+              price: row.price,
+              originalPrice: row.original_price ?? undefined,
+              rating: row.rating,
+              reviewCount: row.review_count,
+              shortDescription: row.short_description,
+              longDescription: row.long_description,
+              features: row.features,
+              specs: row.specs,
+              stockStatus: row.stock_status,
+              images: row.images,
+              badge: row.badge ?? undefined,
+            }))
+          );
+        }
+      } catch {
+        setProduct(getLocalProduct(id) ?? null);
+      }
+    };
+
+    fetchProduct();
+  }, [params.id]);
 
   // Handle sticky bar visibility on scroll
   useEffect(() => {
@@ -75,6 +148,14 @@ export default function ProductDetailPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  if (product === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <RefreshCw className="w-8 h-8 text-neutral-400 animate-spin" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -98,7 +179,7 @@ export default function ProductDetailPage() {
   }
 
   const category = getCategoryById(product.category);
-  const relatedProducts = products
+  const relatedProducts = allProducts
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
@@ -195,60 +276,82 @@ export default function ProductDetailPage() {
                       : 'Best Value'}
                   </span>
                 )}
-                <div className="w-full h-full flex items-center justify-center p-12">
-                  <div className="text-center">
-                    <div className="w-40 h-40 mx-auto bg-white rounded-2xl shadow-soft flex items-center justify-center mb-4">
-                      <svg
-                        className="w-20 h-20 text-neutral-300"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
+                <div className="w-full h-full flex items-center justify-center">
+                  {product.images?.[selectedImageIndex]?.startsWith('http') ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={product.images[selectedImageIndex]}
+                      alt={`${product.name} - Image ${selectedImageIndex + 1}`}
+                      className="w-full h-full object-contain p-4"
+                    />
+                  ) : (
+                    <div className="text-center p-12">
+                      <div className="w-40 h-40 mx-auto bg-white rounded-2xl shadow-soft flex items-center justify-center mb-4">
+                        <svg
+                          className="w-20 h-20 text-neutral-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <p className="text-neutral-400 text-sm">
+                        {product.name}
+                      </p>
                     </div>
-                    <p className="text-neutral-400 text-sm">Image {selectedImageIndex + 1} of 4</p>
-                  </div>
+                  )}
                 </div>
               </div>
 
               {/* Thumbnail gallery */}
-              <div className="grid grid-cols-4 gap-3">
-                {[0, 1, 2, 3].map((index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={cn(
-                      'aspect-square bg-neutral-50 rounded-xl border-2 transition-all duration-200 hover:border-primary-300',
-                      selectedImageIndex === index
-                        ? 'border-primary-500 ring-2 ring-primary-100'
-                        : 'border-transparent'
-                    )}
-                    aria-label={`View image ${index + 1}`}
-                  >
-                    <div className="w-full h-full flex items-center justify-center text-neutral-300">
-                      <svg
-                        className="w-8 h-8"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              {product.images && product.images.length > 1 && (
+                <div className="grid grid-cols-4 gap-3">
+                  {product.images.map((img, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={cn(
+                        'aspect-square bg-neutral-50 rounded-xl border-2 transition-all duration-200 hover:border-primary-300 overflow-hidden',
+                        selectedImageIndex === index
+                          ? 'border-primary-500 ring-2 ring-primary-100'
+                          : 'border-transparent'
+                      )}
+                      aria-label={`View image ${index + 1}`}
+                    >
+                      {img.startsWith('http') ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={img}
+                          alt={`${product.name} thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
                         />
-                      </svg>
-                    </div>
-                  </button>
-                ))}
-              </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-neutral-300">
+                          <svg
+                            className="w-8 h-8"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Right: Product Info */}

@@ -2,11 +2,12 @@
 
 import React, { useState, useMemo, Suspense, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { SlidersHorizontal, Grid, List, X, ChevronDown, Search, Package, Star, Sparkles } from 'lucide-react';
-import { products, categories } from '@/data';
-import { Category } from '@/types';
+import { SlidersHorizontal, Grid, List, X, ChevronDown, Search, Package, Star, Sparkles, RefreshCw } from 'lucide-react';
+import { products as mockProducts, categories } from '@/data';
+import { Product, Category } from '@/types';
 import { Breadcrumbs, ProductCard, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
 
 const sortOptions = [
   { value: 'featured', label: 'Featured' },
@@ -43,6 +44,47 @@ function ShopContent() {
   const [sortBy, setSortBy] = useState(sortParam || 'featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // Fetch products from Supabase (with fallback to mock data)
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const mapped: Product[] = data.map((row: any) => ({
+            id: row.id,
+            name: row.name,
+            category: row.category as Category,
+            price: row.price,
+            originalPrice: row.original_price ?? undefined,
+            rating: row.rating,
+            reviewCount: row.review_count,
+            shortDescription: row.short_description,
+            longDescription: row.long_description,
+            features: row.features,
+            specs: row.specs,
+            stockStatus: row.stock_status,
+            images: row.images,
+            badge: row.badge ?? undefined,
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch from Supabase, using mock data:', err);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Sync filters to URL
   const updateURL = useCallback(() => {
