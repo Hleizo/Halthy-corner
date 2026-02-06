@@ -31,7 +31,7 @@ import { Product, Category } from '@/types';
 import { Breadcrumbs, Button, ProductCard } from '@/components/ui';
 import { cn, formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
-import { createClient } from '@/lib/supabase/client';
+import { getProductById as getSupabaseProduct, getAllProducts } from '@/lib/supabase/api';
 
 // Product FAQs - common questions for products
 const productFaqs = [
@@ -76,61 +76,17 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       const id = params.id as string;
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (!error && data) {
-          const mapped: Product = {
-            id: data.id,
-            name: data.name,
-            category: data.category as Category,
-            price: data.price,
-            originalPrice: data.original_price ?? undefined,
-            rating: data.rating,
-            reviewCount: data.review_count,
-            shortDescription: data.short_description,
-            longDescription: data.long_description,
-            features: data.features,
-            specs: data.specs,
-            stockStatus: data.stock_status,
-            images: data.images,
-            badge: data.badge ?? undefined,
-          };
-          setProduct(mapped);
+        const supabaseProduct = await getSupabaseProduct(id);
+        if (supabaseProduct) {
+          setProduct(supabaseProduct);
         } else {
-          // Fall back to local data
           setProduct(getLocalProduct(id) ?? null);
         }
 
         // Also fetch all products for related section
-        const { data: allData } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: true });
-
-        if (allData && allData.length > 0) {
-          setAllProducts(
-            allData.map((row: any) => ({
-              id: row.id,
-              name: row.name,
-              category: row.category as Category,
-              price: row.price,
-              originalPrice: row.original_price ?? undefined,
-              rating: row.rating,
-              reviewCount: row.review_count,
-              shortDescription: row.short_description,
-              longDescription: row.long_description,
-              features: row.features,
-              specs: row.specs,
-              stockStatus: row.stock_status,
-              images: row.images,
-              badge: row.badge ?? undefined,
-            }))
-          );
+        const allData = await getAllProducts();
+        if (allData.length > 0) {
+          setAllProducts(allData);
         }
       } catch {
         setProduct(getLocalProduct(id) ?? null);
