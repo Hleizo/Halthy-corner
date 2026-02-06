@@ -12,6 +12,8 @@ import {
   AlertCircle,
   CheckCircle2,
   Image as ImageIcon,
+  Upload,
+  GripVertical,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { formatPrice } from '@/lib/utils';
@@ -72,6 +74,7 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState(EMPTY_PRODUCT);
   const [specKey, setSpecKey] = useState('');
   const [specValue, setSpecValue] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const showToast = (type: 'success' | 'error', message: string) => {
     setToast({ type, message });
@@ -236,6 +239,66 @@ export default function AdminProductsPage() {
   const removeImage = (index: number) =>
     setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
 
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const supabase = createClient();
+    const newUrls: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          showToast('error', `"${file.name}" is not an image file`);
+          continue;
+        }
+        // Max 5MB
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('error', `"${file.name}" exceeds 5MB limit`);
+          continue;
+        }
+
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+        const filePath = `products/${fileName}`;
+
+        const { error } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+        if (error) {
+          console.error('Upload error:', error);
+          showToast('error', `Failed to upload "${file.name}": ${error.message}`);
+          continue;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(filePath);
+
+        newUrls.push(urlData.publicUrl);
+      }
+
+      if (newUrls.length > 0) {
+        setForm((f) => ({
+          ...f,
+          images: [
+            ...f.images.filter((img) => img && img !== '/images/products/placeholder.jpg'),
+            ...newUrls,
+          ],
+        }));
+        showToast('success', `${newUrls.length} image${newUrls.length > 1 ? 's' : ''} uploaded!`);
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+      showToast('error', 'Image upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div>
       {/* Toast notification */}
@@ -321,8 +384,21 @@ export default function AdminProductsPage() {
                   <tr key={product.id} className="hover:bg-neutral-800/50 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-neutral-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <ImageIcon className="w-5 h-5 text-neutral-600" />
+                        <div className="w-10 h-10 bg-neutral-800 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                          {product.images?.[0] && product.images[0] !== '/images/products/placeholder.jpg' ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img
+                              src={product.images[0]}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                                (e.target as HTMLImageElement).parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neutral-600"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+                              }}
+                            />
+                          ) : (
+                            <ImageIcon className="w-5 h-5 text-neutral-600" />
+                          )}
                         </div>
                         <div>
                           <p className="font-medium text-white">{product.name}</p>
@@ -611,36 +687,131 @@ export default function AdminProductsPage() {
               {/* Images */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-sm font-medium text-neutral-300">Image URLs</label>
-                  <button
-                    onClick={addImage}
-                    className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
-                  >
-                    + Add Image
-                  </button>
+                  <label className="text-sm font-medium text-neutral-300">
+                    Product Images
+                  </label>
+                  <span className="text-xs text-neutral-500">
+                    {form.images.filter((img) => img && img !== '/images/products/placeholder.jpg').length} image{form.images.filter((img) => img && img !== '/images/products/placeholder.jpg').length !== 1 ? 's' : ''}
+                  </span>
                 </div>
-                <div className="space-y-2">
-                  {form.images.map((img, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                      <input
-                        type="text"
-                        value={img}
-                        onChange={(e) => updateImage(i, e.target.value)}
-                        className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="/images/products/your-image.jpg"
-                      />
-                      {form.images.length > 1 && (
-                        <button
-                          onClick={() => removeImage(i)}
-                          className="p-1.5 text-neutral-500 hover:text-red-400 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
+
+                {/* Upload Zone */}
+                <label
+                  className={`relative flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
+                    uploading
+                      ? 'border-primary-500/50 bg-primary-500/5'
+                      : 'border-neutral-700 hover:border-primary-500/50 hover:bg-neutral-800/50'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => handleFileUpload(e.target.files)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={uploading}
+                  />
+                  {uploading ? (
+                    <>
+                      <RefreshCw className="w-6 h-6 text-primary-400 animate-spin" />
+                      <span className="text-sm text-primary-400">Uploading…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 text-neutral-500" />
+                      <div className="text-center">
+                        <span className="text-sm text-neutral-300">Click to upload images</span>
+                        <p className="text-xs text-neutral-500 mt-0.5">
+                          PNG, JPG, WEBP up to 5MB · Select multiple files at once
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </label>
+
+                {/* Image Previews */}
+                {form.images.filter((img) => img && img !== '/images/products/placeholder.jpg').length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+                    {form.images
+                      .map((img, i) => ({ img, i }))
+                      .filter(({ img }) => img && img !== '/images/products/placeholder.jpg')
+                      .map(({ img, i }, displayIndex) => (
+                        <div key={i} className="relative group rounded-lg overflow-hidden bg-neutral-800 border border-neutral-700">
+                          <div className="aspect-square relative">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={img}
+                              alt={`Product image ${displayIndex + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '';
+                                (e.target as HTMLImageElement).classList.add('hidden');
+                                (e.target as HTMLImageElement).parentElement!.classList.add('flex', 'items-center', 'justify-center');
+                                const icon = document.createElement('div');
+                                icon.innerHTML = '<span class="text-xs text-neutral-500">No preview</span>';
+                                (e.target as HTMLImageElement).parentElement!.appendChild(icon);
+                              }}
+                            />
+                          </div>
+                          {/* Overlay with actions */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            {displayIndex === 0 && (
+                              <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-primary-500 text-white text-[10px] font-medium rounded">
+                                Main
+                              </span>
+                            )}
+                            <button
+                              onClick={() => removeImage(i)}
+                              className="p-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-colors"
+                              title="Remove image"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          {displayIndex === 0 && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-primary-500/90 text-center py-0.5">
+                              <span className="text-[10px] text-white font-medium">Main Image</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Manual URL input */}
+                <details className="mt-3">
+                  <summary className="text-xs text-neutral-500 hover:text-neutral-300 cursor-pointer transition-colors">
+                    Or add image by URL
+                  </summary>
+                  <div className="mt-2 space-y-2">
+                    {form.images.map((img, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-neutral-500 flex-shrink-0" />
+                        <input
+                          type="text"
+                          value={img}
+                          onChange={(e) => updateImage(i, e.target.value)}
+                          className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                        {form.images.length > 1 && (
+                          <button
+                            onClick={() => removeImage(i)}
+                            className="p-1.5 text-neutral-500 hover:text-red-400 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      onClick={addImage}
+                      className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                    >
+                      + Add another URL
+                    </button>
+                  </div>
+                </details>
               </div>
             </div>
 
