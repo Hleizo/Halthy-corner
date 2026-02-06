@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { HeartPulse, LogOut, Package, ShoppingBag, LayoutDashboard } from 'lucide-react';
+import { HeartPulse, LogOut, Package, ShoppingBag, LayoutDashboard, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function AdminLayout({
@@ -13,6 +13,31 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    // Skip auth check on login page
+    if (pathname === '/admin/login') {
+      setChecking(false);
+      setIsAuthenticated(true);
+      return;
+    }
+
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace('/admin/login');
+      } else {
+        setIsAuthenticated(true);
+      }
+      setChecking(false);
+    };
+
+    checkAuth();
+  }, [pathname, router]);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -30,6 +55,15 @@ export default function AdminLayout({
   // Don't show nav on login page
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  // Show loading spinner while checking auth
+  if (checking || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary-400 animate-spin" />
+      </div>
+    );
   }
 
   return (
