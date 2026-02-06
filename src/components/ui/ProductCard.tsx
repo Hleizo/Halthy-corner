@@ -49,12 +49,13 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
       >
         {/* Product image or placeholder */}
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-50">
-          {product.images?.[0] && product.images[0].startsWith('http') ? (
+          {product.images?.[0] && product.images[0] !== '/images/products/placeholder.jpg' ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
-              src={product.images[0]}
+              src={product.images.find((img) => img.startsWith('http')) || product.images[0]}
               alt={product.name}
               className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
           ) : (
             <div className="text-neutral-300">
