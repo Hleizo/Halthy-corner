@@ -44,7 +44,7 @@ function ShopContent() {
   const [sortBy, setSortBy] = useState(sortParam || 'featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
 
   // Fetch products from Supabase (with fallback to mock data)
@@ -52,11 +52,10 @@ function ShopContent() {
     const fetchProducts = async () => {
       try {
         const supabaseProducts = await getAllProducts();
-        if (supabaseProducts.length > 0) {
-          setProducts(supabaseProducts);
-        }
+        setProducts(supabaseProducts.length > 0 ? supabaseProducts : mockProducts);
       } catch (err) {
         console.warn('Failed to fetch from Supabase, using mock data:', err);
+        setProducts(mockProducts);
       } finally {
         setLoadingProducts(false);
       }
