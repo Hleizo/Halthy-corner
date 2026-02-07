@@ -467,7 +467,19 @@ function ShopContent() {
             </div>
 
             {/* Products grid */}
-            {filteredProducts.length === 0 ? (
+            {loadingProducts ? (
+              <div className="bg-white rounded-2xl border border-neutral-100 p-12 text-center">
+                <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                  <RefreshCw className="w-10 h-10 text-neutral-400 animate-spin" />
+                </div>
+                <h3 className="text-xl font-semibold text-neutral-800 mb-2">
+                  Loading products...
+                </h3>
+                <p className="text-neutral-500">
+                  Fetching the latest medical devices for you.
+                </p>
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="bg-white rounded-2xl border border-neutral-100 p-12 text-center">
                 <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Package className="w-10 h-10 text-neutral-400" />
