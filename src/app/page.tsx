@@ -64,8 +64,8 @@ export default async function HomePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button asChild size="lg" rightIcon={<ArrowRight className="w-5 h-5" />}>
-                  <Link href="/shop">Shop Devices</Link>
+                <Button asChild size="lg">
+                  <Link href="/shop">Shop Devices <ArrowRight className="w-5 h-5" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link href="/contact">Talk to Us</Link>
@@ -241,8 +241,8 @@ export default async function HomePage() {
                 Trusted by thousands for reliable health monitoring
               </p>
             </div>
-            <Button asChild variant="outline" rightIcon={<ArrowRight className="w-4 h-4" />}>
-              <Link href="/shop">View All Products</Link>
+            <Button asChild variant="outline">
+              <Link href="/shop">View All Products <ArrowRight className="w-4 h-4" /></Link>
             </Button>
           </div>
 
@@ -387,8 +387,8 @@ export default async function HomePage() {
             </div>
 
             <div className="text-center mt-10">
-              <Button asChild variant="outline" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                <Link href="/faq">Read Our Full Guide</Link>
+              <Button asChild variant="outline">
+                <Link href="/faq">Read Our Full Guide <ArrowRight className="w-4 h-4" /></Link>
               </Button>
             </div>
           </div>

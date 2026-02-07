@@ -126,8 +126,8 @@ export default function ProductDetailPage() {
           <p className="text-neutral-500 mb-6">
             The product you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
-          <Button asChild leftIcon={<ArrowLeft className="w-4 h-4" />}>
-            <Link href="/shop">Back to Shop</Link>
+          <Button asChild>
+            <Link href="/shop"><ArrowLeft className="w-4 h-4" /> Back to Shop</Link>
           </Button>
         </div>
       </div>
